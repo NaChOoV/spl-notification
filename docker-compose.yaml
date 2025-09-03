@@ -1,6 +1,8 @@
 services:
-    app-bot:
+    spl-notification:
         build:
             context: .
             dockerfile: Dockerfile
+        image: spl-notification:latest
+        network_mode: host
         restart: always
