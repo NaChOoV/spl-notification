@@ -27,4 +27,4 @@ COPY --from=prerelease /app/. .
 
 # run the app
 USER bun
-ENTRYPOINT [ "bun", "run", "main.ts" ]
+ENTRYPOINT [ "bun", "run", "src/index.ts" ]

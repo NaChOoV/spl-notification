@@ -35,7 +35,6 @@ class TrackRepository {
     }
 
     public async checkTrack(accessToVerify: Access[], type: TrackType): Promise<Track[]> {
-        console.log(accessToVerify);
         const conditionals = accessToVerify.reduce<SQL[]>((acc, access) => {
             const condition = and(
                 eq(track.userId, access.externalId),
