@@ -1,0 +1,6 @@
+services:
+    app-bot:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        restart: always
