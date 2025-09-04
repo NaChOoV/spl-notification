@@ -21,8 +21,8 @@ class CronJobService {
 
     private async checkAccess() {
         await this.checkSleepTime(this.checkAccess.name);
+
         const accesses = await this.accessService.getAccess();
-        console.log(accesses.length);
         if (accesses.length === 0) return;
 
         await this.accessService.checkAccess(accesses);
