@@ -1,5 +1,6 @@
 import TrackRepository from './repository/track.repository';
 import AccessService from './service/access.service';
+import CronJobService from './service/cron.service';
 import SourceService from './service/source.service';
 import WhatsappService from './service/whatsapp.service';
 
@@ -8,5 +9,6 @@ const trackRepository = new TrackRepository();
 const sourceService = new SourceService();
 
 const accessService = new AccessService(trackRepository, whatsappService);
+const cronjobService = new CronJobService(accessService);
 
-export { whatsappService, trackRepository, accessService, sourceService };
+export { whatsappService, trackRepository, accessService, sourceService, cronjobService };

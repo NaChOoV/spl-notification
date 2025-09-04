@@ -12,6 +12,7 @@
         "@hono/zod-validator": "^0.7.2",
         "@libsql/client": "^0.15.10",
         "axios": "^1.11.0",
+        "cron": "^4.3.3",
         "drizzle-orm": "^0.44.4",
         "hono": "^4.9.1"
     },

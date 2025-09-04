@@ -24,8 +24,6 @@ class AccessService {
     }
 
     public async checkAccess(accessArray: Access[]): Promise<void> {
-        if (accessArray.length === 0) return;
-
         const matchTracks: Track[] = [];
         const allTracks = await this.trackRepository.getAll(TrackType.TRACK);
 

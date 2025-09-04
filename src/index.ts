@@ -4,7 +4,13 @@ import EnvConfig from './config/enviroment';
 import { authMiddleware } from './middleware/auth';
 import { runMigration } from './db/database';
 import type { Access } from './types/access';
-import { accessService, sourceService, trackRepository, whatsappService } from './di-container';
+import {
+    accessService,
+    cronjobService,
+    sourceService,
+    trackRepository,
+    whatsappService,
+} from './di-container';
 import { accessValidator } from './validator/access.validator';
 import { TrackType } from './db/schema';
 import { HttpStatusCode } from 'axios';
@@ -13,6 +19,7 @@ import { trackValidator } from './validator/track.validator';
 import { logger } from 'hono/logger';
 
 await runMigration();
+await cronjobService.setup();
 
 const app = new Hono();
 app.use(
