@@ -31,7 +31,13 @@ class TrackRepository {
     public async removeTrack(chatId: number, run: string, type: TrackType): Promise<void> {
         await this.client
             .delete(track)
-            .where(and(eq(track.chatId, chatId), eq(track.run, run), eq(track.type, type)));
+            .where(
+                and(
+                    eq(track.chatId, chatId),
+                    sql`UPPER(${track.run}) = UPPER(${run})`,
+                    eq(track.type, type)
+                )
+            );
     }
 
     public async checkTrack(accessToVerify: Access[], type: TrackType): Promise<Track[]> {
