@@ -25,11 +25,13 @@ class WhatsappService {
 
     public async notifyEntry(tracks: NotifyTrack[]): Promise<NotifyResult> {
         const promises = tracks.map<Promise<void>>((track) => {
-            const message = `🚨 ${
-                track.alias || track.fullName
-            }\nAcaba de hacer ingreso a\n${getLocation(track.location)}`;
+            const body = {
+                chatId: String(track.chatId),
+                fullName: track.fullName,
+                location: getLocation(track.location),
+            };
 
-            return this.sendMessage(String(track.chatId), message);
+            return this.httpService.post('webhook/whatsapp/notify-entry', body);
         });
 
         const response = await Promise.allSettled(promises);
