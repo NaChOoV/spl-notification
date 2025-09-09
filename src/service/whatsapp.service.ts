@@ -27,7 +27,7 @@ class WhatsappService {
         const promises = tracks.map<Promise<void>>((track) => {
             const body = {
                 chatId: String(track.chatId),
-                fullName: track.fullName,
+                fullName: track.alias || track.fullName,
                 location: getLocation(track.location),
             };
 
