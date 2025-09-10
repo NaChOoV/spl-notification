@@ -17,6 +17,7 @@ class TrackRepository {
         type: TrackType;
         alias?: string;
         lastEntry?: string;
+        lastExit?: string;
     }): Promise<void> {
         await this.client.insert(track).values(trackData).onConflictDoNothing();
     }
@@ -59,7 +60,7 @@ class TrackRepository {
         return trackResponse;
     }
 
-    public async updateTrack(accesses: Access[], type: TrackType): Promise<void> {
+    public async updateEntryAt(accesses: Access[], type: TrackType): Promise<void> {
         const sqlChunks: SQL[] = [];
         const userIds: string[] = [];
 
@@ -75,6 +76,25 @@ class TrackRepository {
         await db
             .update(track)
             .set({ lastEntry: finalSql })
+            .where(and(inArray(track.userId, userIds), eq(track.type, type)));
+    }
+
+    public async updateExitAt(accesses: Access[], type: TrackType): Promise<void> {
+        const sqlChunks: SQL[] = [];
+        const userIds: string[] = [];
+
+        sqlChunks.push(sql`(case`);
+        for (const access of accesses) {
+            sqlChunks.push(sql`when ${track.userId} = ${access.externalId} then ${access.exitAt}`);
+            userIds.push(access.externalId);
+        }
+        sqlChunks.push(sql`end)`);
+
+        const finalSql: SQL = sql.join(sqlChunks, sql.raw(' '));
+
+        await db
+            .update(track)
+            .set({ lastExit: finalSql })
             .where(and(inArray(track.userId, userIds), eq(track.type, type)));
     }
 

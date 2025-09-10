@@ -16,6 +16,7 @@ export const track = sqliteTable(
         fullName: text().notNull(),
         alias: text(),
         lastEntry: text().default(''),
+        lastExit: text().default(''),
         type: text().default(TrackType.TRACK).notNull(),
     },
     (t) => [unique().on(t.chatId, t.run, t.type)]

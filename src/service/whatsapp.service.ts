@@ -44,6 +44,27 @@ class WhatsappService {
         };
     }
 
+    public async notifyExit(tracks: NotifyTrack[]): Promise<NotifyResult> {
+        const promises = tracks.map<Promise<void>>((track) => {
+            const body = {
+                chatId: String(track.chatId),
+                fullName: track.alias || track.fullName,
+                location: getLocation(track.location),
+            };
+
+            return this.httpService.post('webhook/whatsapp/notify-exit', body);
+        });
+
+        const response = await Promise.allSettled(promises);
+        const fulfilled = response.filter((res) => res.status === 'fulfilled');
+        const rejected = response.filter((res) => res.status === 'rejected');
+
+        return {
+            fullFilled: fulfilled.length,
+            rejected: rejected.length,
+        };
+    }
+
     public async listTracks(chatId: string, tracks: Track[]): Promise<void> {
         let message = 'No tienes seguimientos.';
         if (tracks.length > 0) {

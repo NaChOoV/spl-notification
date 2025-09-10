@@ -24,7 +24,8 @@ class AccessService {
     }
 
     public async checkAccess(accessArray: Access[]): Promise<void> {
-        const matchTracks: Track[] = [];
+        const matchEntryAtTracks: Track[] = [];
+        const matchExitAtTracks: Track[] = [];
         const allTracks = await this.trackRepository.getAll(TrackType.TRACK);
 
         allTracks.forEach((track) => {
@@ -33,23 +34,44 @@ class AccessService {
             );
             if (!matchAccess) return;
 
-            matchTracks.push(track);
+            matchEntryAtTracks.push(track);
         });
-        if (matchTracks.length === 0) return;
 
-        const matchUserIds = extractUnique(matchTracks, (track) => track.userId);
-        const accessToUpdate = accessArray.filter((access) =>
-            matchUserIds.includes(access.externalId)
+        allTracks.forEach((track) => {
+            const matchAccess = accessArray.find(
+                (access) =>
+                    access.externalId === track.userId &&
+                    access.exitAt &&
+                    access.exitAt !== track.lastExit
+            );
+            if (!matchAccess) return;
+
+            matchExitAtTracks.push(track);
+        });
+
+        const matchEntryUserIds = extractUnique(matchEntryAtTracks, (track) => track.userId);
+        const accessToUpdateEntry = accessArray.filter((access) =>
+            matchEntryUserIds.includes(access.externalId)
         );
 
-        await this.trackRepository.updateTrack(accessToUpdate, TrackType.TRACK);
+        const matchExitUserIds = extractUnique(matchExitAtTracks, (track) => track.userId);
+        const accessToUpdateExit = accessArray.filter((access) =>
+            matchExitUserIds.includes(access.externalId)
+        );
 
-        const tracksToNotify: NotifyTrack[] = [];
-        matchTracks.forEach((track) => {
-            const access = accessToUpdate.find((access) => access.externalId === track.userId);
+        if (accessToUpdateEntry.length !== 0) {
+            await this.trackRepository.updateEntryAt(accessToUpdateEntry, TrackType.TRACK);
+        }
+        if (accessToUpdateExit.length !== 0) {
+            await this.trackRepository.updateExitAt(accessToUpdateExit, TrackType.TRACK);
+        }
+
+        const tracksToNotifyEntry: NotifyTrack[] = [];
+        matchEntryAtTracks.forEach((track) => {
+            const access = accessToUpdateEntry.find((access) => access.externalId === track.userId);
             if (!access) return;
 
-            tracksToNotify.push({
+            tracksToNotifyEntry.push({
                 chatId: track.chatId,
                 run: track.run,
                 fullName: track.fullName,
@@ -58,9 +80,33 @@ class AccessService {
             });
         });
 
-        console.log('Nuevos seguimientos:', tracksToNotify.length);
-        const result = await this.whatsappService.notifyEntry(tracksToNotify);
-        console.log(`FullFilled: ${result.fullFilled}, Rejected: ${result.rejected}`);
+        const tracksToNotifyExit: NotifyTrack[] = [];
+        matchExitAtTracks.forEach((track) => {
+            const access = accessToUpdateExit.find((access) => access.externalId === track.userId);
+            if (!access) return;
+
+            tracksToNotifyExit.push({
+                chatId: track.chatId,
+                run: track.run,
+                fullName: track.fullName,
+                alias: track.alias,
+                location: access.location,
+            });
+        });
+
+        if (tracksToNotifyEntry.length > 0) {
+            const result = await this.whatsappService.notifyEntry(tracksToNotifyEntry);
+            console.log('Entradas registradas:', tracksToNotifyEntry.length);
+            console.log(
+                `FullFilled Entry: ${result.fullFilled}, Rejected Entry: ${result.rejected}`
+            );
+        }
+
+        if (tracksToNotifyExit.length > 0) {
+            const result = await this.whatsappService.notifyExit(tracksToNotifyExit);
+            console.log('Salidas registradas:', tracksToNotifyExit.length);
+            console.log(`FullFilled Exit: ${result.fullFilled}, Rejected Exit: ${result.rejected}`);
+        }
     }
 
     public async getAccess(): Promise<Access[]> {

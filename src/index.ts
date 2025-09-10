@@ -54,6 +54,7 @@ app.post('/track', authMiddleware, trackValidator, async (c) => {
     const accesses = await accessService.getAccess();
     const access = accesses.find((access) => access.externalId === String(abmUser.externalId));
     const lastEntry = access?.entryAt;
+    const lastExit = access?.exitAt;
 
     const newTrack = {
         chatId: Number(trackDto.chatId),
@@ -63,6 +64,7 @@ app.post('/track', authMiddleware, trackValidator, async (c) => {
         type: TrackType.TRACK,
         alias: trackDto.alias,
         lastEntry,
+        lastExit,
     };
 
     await trackRepository.createTrack(newTrack);

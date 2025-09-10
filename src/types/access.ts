@@ -4,4 +4,5 @@ export interface Access {
     fullName: string;
     location: string;
     entryAt: string;
+    exitAt?: string;
 }
