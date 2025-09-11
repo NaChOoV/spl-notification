@@ -7,6 +7,7 @@ import { extractUnique } from '../utils/utility';
 import type WhatsappService from './whatsapp.service';
 import axios from 'axios';
 import EnvConfig from '../config/enviroment';
+import { Agent } from 'https';
 
 class AccessService {
     private readonly httpService: AxiosInstance;
@@ -17,7 +18,16 @@ class AccessService {
         this.httpService = axios.create({
             baseURL: `${EnvConfig.accessServiceBaseUrl}/api`,
             timeout: 10000,
+            httpsAgent: new Agent({
+                keepAlive: true,
+                keepAliveMsecs: 600000,
+                maxSockets: 3,
+                maxFreeSockets: 2,
+                maxTotalSockets: 5,
+            }),
             headers: {
+                Connection: 'keep-alive',
+                'Keep-Alive': 'timeout=600, max=6000',
                 'X-Auth-Token': EnvConfig.accessServiceAuthString,
             },
         });
