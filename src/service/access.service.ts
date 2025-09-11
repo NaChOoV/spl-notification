@@ -34,9 +34,9 @@ class AccessService {
     }
 
     public async checkAccess(accessArray: Access[]): Promise<void> {
-        const matchEntryAtTracks: Track[] = [];
-        const matchExitAtTracks: Track[] = [];
-        const allTracks = await this.trackRepository.getAll(TrackType.TRACK);
+        let matchEntryAtTracks: Track[] = [];
+        let matchExitAtTracks: Track[] = [];
+        let allTracks = await this.trackRepository.getAll(TrackType.TRACK);
 
         allTracks.forEach((track) => {
             const matchAccess = accessArray.find(
@@ -117,6 +117,18 @@ class AccessService {
             console.log('Salidas registradas:', tracksToNotifyExit.length);
             console.log(`FullFilled Exit: ${result.fullFilled}, Rejected Exit: ${result.rejected}`);
         }
+
+        matchEntryAtTracks.length = 0;
+        matchExitAtTracks.length = 0;
+        allTracks.length = 0;
+
+        matchEntryAtTracks = null as any;
+        matchExitAtTracks = null as any;
+        allTracks = null as any;
+
+        setImmediate(() => {
+            // Event loop tick for GC
+        });
     }
 
     public async getAccess(): Promise<Access[]> {
