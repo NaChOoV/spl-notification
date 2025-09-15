@@ -3,6 +3,7 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
+        mem_limit: 256m
         image: spl-notification:latest
         network_mode: host
         restart: always
