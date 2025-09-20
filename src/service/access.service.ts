@@ -34,30 +34,22 @@ class AccessService {
     }
 
     public async checkAccess(accessArray: Access[]): Promise<void> {
-        let matchEntryAtTracks: Track[] = [];
-        let matchExitAtTracks: Track[] = [];
         let allTracks = await this.trackRepository.getAll(TrackType.TRACK);
 
-        allTracks.forEach((track) => {
-            const matchAccess = accessArray.find(
+        const matchEntryAtTracks = allTracks.filter((track) => {
+            return accessArray.some(
                 (access) => access.externalId === track.userId && access.entryAt !== track.lastEntry
             );
-            if (!matchAccess) return;
+        }) as Track[];
 
-            matchEntryAtTracks.push(track);
-        });
-
-        allTracks.forEach((track) => {
-            const matchAccess = accessArray.find(
+        const matchExitAtTracks = allTracks.filter((track) => {
+            return accessArray.some(
                 (access) =>
                     access.externalId === track.userId &&
                     access.exitAt &&
                     access.exitAt !== track.lastExit
             );
-            if (!matchAccess) return;
-
-            matchExitAtTracks.push(track);
-        });
+        }) as Track[];
 
         const matchEntryUserIds = extractUnique(matchEntryAtTracks, (track) => track.userId);
         const accessToUpdateEntry = accessArray.filter((access) =>
@@ -122,13 +114,7 @@ class AccessService {
         matchExitAtTracks.length = 0;
         allTracks.length = 0;
 
-        matchEntryAtTracks = null as any;
-        matchExitAtTracks = null as any;
         allTracks = null as any;
-
-        setImmediate(() => {
-            // Event loop tick for GC
-        });
     }
 
     public async getAccess(): Promise<Access[]> {
