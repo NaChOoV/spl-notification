@@ -22,10 +22,19 @@ class CronJobService {
     private async checkAccess() {
         await this.checkSleepTime(this.checkAccess.name);
 
-        const accesses = await this.accessService.getAccess();
-        if (accesses.length === 0) return;
+        try {
+            const accesses = await this.accessService.getAccess();
+            if (accesses.length === 0) return;
 
-        await this.accessService.checkAccess(accesses);
+            await this.accessService.checkAccess(accesses);
+        } catch (error) {
+            console.error('[CronJobService] Error in checkAccess:', error);
+        } finally {
+            // Force garbage collection if available
+            if (global.gc) {
+                global.gc();
+            }
+        }
     }
 
     private async checkSleepTime(name: string) {
