@@ -117,8 +117,8 @@ class AccessService {
         allTracks = null as any;
     }
 
-    public async getAccess(): Promise<Access[]> {
-        const response = await this.httpService.get<{ data: Access[] }>('/access/complete');
+    public async getRecentlyAccess(): Promise<Access[]> {
+        const response = await this.httpService.get<{ data: Access[] }>('/access/recently');
         return response.data.data;
     }
 }

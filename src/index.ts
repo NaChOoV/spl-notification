@@ -51,7 +51,7 @@ app.post('/track', authMiddleware, trackValidator, async (c) => {
         return c.body(null, HttpStatusCode.Ok);
     }
 
-    const accesses = await accessService.getAccess();
+    const accesses = await accessService.getRecentlyAccess();
     const access = accesses.find((access) => access.externalId === String(abmUser.externalId));
     const lastEntry = access?.entryAt;
     const lastExit = access?.exitAt;
