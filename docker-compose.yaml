@@ -1,9 +1,8 @@
 services:
-    spl-notification:
+    app:
         build:
             context: .
-            dockerfile: Dockerfile
-        mem_limit: 128m
-        image: spl-notification:latest
+            dockerfile: Dockerfile.local
         network_mode: host
         restart: always
+        mem_limit: 128m
