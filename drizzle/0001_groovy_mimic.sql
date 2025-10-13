@@ -1,1 +1,0 @@
-ALTER TABLE `track` ADD `alias` text;

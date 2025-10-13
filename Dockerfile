@@ -1,30 +1,21 @@
-# Use the official Bun image with version 1.2.4
-FROM oven/bun:1.2.4 AS base
+FROM golang:1.25.2-alpine AS build
+RUN apk add --no-cache gcc musl-dev
+
 WORKDIR /app
-
-# install dependencies into temp directory
-# this will cache them and speed up future builds
-FROM base AS install
-RUN mkdir -p /temp/dev
-COPY package.json bun.lock /temp/dev/
-RUN cd /temp/dev && bun install --frozen-lockfile
-
-# install with --production (exclude devDependencies)
-RUN mkdir -p /temp/prod
-COPY package.json bun.lock /temp/prod/
-RUN cd /temp/prod && bun install --frozen-lockfile --production
-
-# copy node_modules from temp directory
-# then copy all (non-ignored) project files into the image
-FROM base AS prerelease
-COPY --from=install /temp/dev/node_modules node_modules
+COPY go.mod go.sum ./
+RUN go mod download
 COPY . .
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "aarch64" ]; then \
+    CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build -ldflags="-w -s" -o main main.go; \
+    else \
+    go build -ldflags="-w -s" -o main main.go; \
+    fi
 
-# copy production dependencies and source code into final image
-FROM base AS release
-COPY --from=install /temp/prod/node_modules node_modules
-COPY --from=prerelease /app/. .
+FROM golang:1.25.2-alpine
+WORKDIR /app
+COPY --from=build /cmd/spl-notification/main .
 
-# run the app
-USER bun
-ENTRYPOINT [ "bun", "run", "src/index.ts" ]
+EXPOSE 8000
+
+CMD ["./main"]
