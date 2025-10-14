@@ -28,6 +28,7 @@ func CreateFiberServer(
 	app.Get("/health", mainController.Health)
 	// Track
 	app.Get("/track/:chatId", authMiddleware.ValidateAuthHeader, trackController.GetAllFollowTracks)
+	app.Get("/track/send/:chatId", authMiddleware.ValidateAuthHeader, trackController.SendAllFollowTracks)
 	app.Post("/track", authMiddleware.ValidateAuthHeader, trackController.CreateTrack)
 	app.Delete("/track", authMiddleware.ValidateAuthHeader, trackController.DeleteTrack)
 
