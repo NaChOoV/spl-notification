@@ -7,7 +7,7 @@ RUN go mod download
 COPY . .
 RUN ARCH=$(uname -m) && \
     if [ "$ARCH" = "aarch64" ]; then \
-    CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build -ldflags="-w -s" -o main ./cmd/spl-notification/main.go; \
+    GOOS=linux GOARCH=arm64 go build -ldflags="-w -s" -o main ./cmd/spl-notification/main.go; \
     else \
     go build -ldflags="-w -s" -o main ./cmd/spl-notification/main.go; \
     fi

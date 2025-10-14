@@ -28,12 +28,12 @@ func NewTrackServiceImpl(
 func (t *trackServiceImpl) SendAllFollows(chatId string) *errors.AppError {
 	followTracks, err := t.trackRepository.GetTracksByChatId(chatId)
 	if err != nil {
-		return t.error(err)
+		return err
 	}
 
 	err = t.notificationService.SendTracks(chatId, followTracks)
 	if err != nil {
-		return t.error(err)
+		return err
 	}
 
 	return nil
@@ -43,7 +43,7 @@ func (t *trackServiceImpl) SendAllFollows(chatId string) *errors.AppError {
 func (t *trackServiceImpl) GetFollowTracksByChatId(chatId string) ([]*model.Track, *errors.AppError) {
 	followTracks, err := t.trackRepository.GetTracksByChatId(chatId)
 	if err != nil {
-		return nil, t.error(err)
+		return nil, err
 	}
 
 	return followTracks, nil
@@ -52,7 +52,7 @@ func (t *trackServiceImpl) GetFollowTracksByChatId(chatId string) ([]*model.Trac
 func (t *trackServiceImpl) Create(trackDTO *request.CreateTrackDTO) *errors.AppError {
 	accesses, err := t.accessService.GetRecentlyAccess()
 	if err != nil {
-		return t.error(err)
+		return err
 	}
 
 	var userAccess *model.Access
@@ -70,7 +70,12 @@ func (t *trackServiceImpl) Create(trackDTO *request.CreateTrackDTO) *errors.AppE
 
 	err = t.trackRepository.Create(trackDTO)
 	if err != nil {
-		return t.error(err)
+		return err
+	}
+
+	err = t.notificationService.SendMessage(trackDTO.ChatID, "✅ Agregado")
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -79,8 +84,14 @@ func (t *trackServiceImpl) Create(trackDTO *request.CreateTrackDTO) *errors.AppE
 func (t *trackServiceImpl) Delete(deleteDTO *request.DeleteTrackDTO) *errors.AppError {
 	err := t.trackRepository.Delete(deleteDTO)
 	if err != nil {
-		return t.error(err)
+		return err
 	}
+
+	err = t.notificationService.SendMessage(deleteDTO.ChatID, "✅ Eliminado")
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
