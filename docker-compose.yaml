@@ -4,3 +4,6 @@ services:
         network_mode: host
         restart: always
         mem_limit: 128m
+        volumes:
+            - ./.env:/app/.env:ro
+            - ./google-credentials.json:/app/google-credentials.json:ro
