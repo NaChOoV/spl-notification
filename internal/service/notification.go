@@ -121,9 +121,14 @@ func (n *notificationServiceImpl) HandleNotification() {
 }
 
 func (n *notificationServiceImpl) notifyTemplate(request *model.NotificationRequest) *errors.AppError {
+	fullName := request.FullName
+	if request.Alias != nil {
+		fullName = *request.Alias
+	}
+
 	body := map[string]string{
 		"chatId":   request.ChatID,
-		"fullName": request.FullName,
+		"fullName": fullName,
 		"location": request.LocationName(),
 	}
 
