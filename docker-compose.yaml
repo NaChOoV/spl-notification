@@ -1,8 +1,6 @@
 services:
     app:
-        build:
-            context: .
-            dockerfile: Dockerfile.local
+        image: ghcr.io/nachooov/spl-notification:latest
         network_mode: host
         restart: always
         mem_limit: 128m
