@@ -1,6 +1,6 @@
 services:
     app:
-        image: ghcr.io/nachooov/spl-notification:latest
+        image: ghcr.io/nachoov/spl-notification:latest
         network_mode: host
         restart: always
         mem_limit: 128m
