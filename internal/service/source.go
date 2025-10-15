@@ -41,6 +41,9 @@ func (s *sourceServiceImpl) GetABMUserByRun(run string) (*model.ABMUser, *errors
 
 	var user model.ABMUser
 	if err := json.NewDecoder(resp.Body).Decode(&user); err != nil {
+		if err.Error() == "EOF" {
+			return nil, nil
+		}
 		return nil, s.error(err)
 	}
 
@@ -66,6 +69,9 @@ func (s *sourceServiceImpl) GetUserByExternalId(externalId int32) (*model.User, 
 
 	var user model.User
 	if err := json.NewDecoder(resp.Body).Decode(&user); err != nil {
+		if err.Error() == "EOF" {
+			return nil, nil
+		}
 		return nil, s.error(err)
 	}
 
