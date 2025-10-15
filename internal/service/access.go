@@ -121,24 +121,24 @@ func (a *accessServiceImpl) compareTrackAndAccess(accessArray []*model.Access, t
 				}
 
 				// ExitAt comparison
-				isDifferent := false
 				bothNil := track.LastExit == nil && access.ExitAt == nil
-
-				if !bothNil {
-					isDifferent = !track.LastExit.Equal(*access.ExitAt)
+				if bothNil || access.ExitAt == nil {
+					continue
 				}
 
-				if !isDifferent {
-					isDifferent = track.LastExit == nil && access.ExitAt != nil
+				notEqual := (track.LastExit == nil && access.ExitAt != nil)
+				if !notEqual {
+					notEqual = !access.ExitAt.Equal(*track.LastExit)
 				}
 
-				if isDifferent {
-					matchExitAtTracks = append(matchExitAtTracks, track)
+				if !notEqual {
+					continue
+				}
 
-					_, exist := trackToUpdateExit[access.ExternalID]
-					if !exist {
-						trackToUpdateExit[access.ExternalID] = access
-					}
+				matchExitAtTracks = append(matchExitAtTracks, track)
+				_, exist := trackToUpdateExit[access.ExternalID]
+				if !exist {
+					trackToUpdateExit[access.ExternalID] = access
 				}
 
 			}
