@@ -5,6 +5,7 @@ import (
 	"spl-notification/internal/dto/request"
 	"spl-notification/internal/errors"
 	"spl-notification/internal/model"
+	"strings"
 	"time"
 )
 
@@ -251,7 +252,7 @@ func (r *trackRepositoryImpl) Create(trackDTO *request.CreateTrackDTO) *errors.A
 		query,
 		trackDTO.ChatID,
 		trackDTO.ExternalID,
-		trackDTO.Run,
+		strings.ToUpper(trackDTO.Run),
 		trackDTO.FullName,
 		trackDTO.Alias,
 		lastEntry,
@@ -271,7 +272,7 @@ func (r *trackRepositoryImpl) Delete(trackDTO *request.DeleteTrackDTO) *errors.A
 		WHERE chat_id = ? AND run = ?
 	`
 
-	_, err := r.db.Exec(query, trackDTO.ChatID, trackDTO.Run)
+	_, err := r.db.Exec(query, trackDTO.ChatID, strings.ToUpper(trackDTO.Run))
 	if err != nil {
 		return r.error(err)
 	}
