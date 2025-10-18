@@ -172,8 +172,8 @@ func (a *accessServiceImpl) compareTrackAndAccess(accessArray []*model.Access, t
 	return matchEntryAtTracks, matchExitAtTracks, nil
 }
 
-func (a *accessServiceImpl) GetRecentlyAccess() ([]*model.Access, *errors.AppError) {
-	url := a.enviromentConfig.AccessServiceBaseUrl + "/api/access/recently"
+func (a *accessServiceImpl) GetCompleteAccess() ([]*model.Access, *errors.AppError) {
+	url := a.enviromentConfig.AccessServiceBaseUrl + "/api/access/complete"
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, a.error(err)

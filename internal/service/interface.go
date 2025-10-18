@@ -8,7 +8,7 @@ import (
 
 type AccessService interface {
 	CheckAccess(access []*model.Access) *errors.AppError
-	GetRecentlyAccess() ([]*model.Access, *errors.AppError)
+	GetCompleteAccess() ([]*model.Access, *errors.AppError)
 }
 
 type NotificationService interface {

@@ -50,7 +50,7 @@ func (t *trackServiceImpl) GetFollowTracksByChatId(chatId string) ([]*model.Trac
 }
 
 func (t *trackServiceImpl) Create(trackDTO *request.CreateTrackDTO) *errors.AppError {
-	accesses, err := t.accessService.GetRecentlyAccess()
+	accesses, err := t.accessService.GetCompleteAccess()
 	if err != nil {
 		return err
 	}

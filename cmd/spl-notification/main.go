@@ -68,7 +68,7 @@ func main() {
 			s.NewJob(
 				gocron.DurationJob(5*time.Second),
 				gocron.NewTask(func() {
-					accesses, err := accessService.GetRecentlyAccess()
+					accesses, err := accessService.GetCompleteAccess()
 					if err != nil {
 						fmt.Println("[CRON] Error fetching accesses:", err)
 						return

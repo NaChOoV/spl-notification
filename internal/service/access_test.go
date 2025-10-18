@@ -444,9 +444,9 @@ func TestCheckAccess_EmptyAccessArray(t *testing.T) {
 	mockNotifyService.AssertNotCalled(t, "SendNotification")
 }
 
-// Tests for GetRecentlyAccess
+// Tests for GetCompleteAccess
 
-func TestGetRecentlyAccess_Success(t *testing.T) {
+func TestGetCompleteAccess_Success(t *testing.T) {
 	// Setup mock HTTP server
 	exitAtValue := "2025-10-05T16:58:54Z"
 	mockResponse := struct {
@@ -473,7 +473,7 @@ func TestGetRecentlyAccess_Success(t *testing.T) {
 	}
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/api/access/recently", r.URL.Path)
+		assert.Equal(t, "/api/access/complete", r.URL.Path)
 		assert.Equal(t, "GET", r.Method)
 
 		w.Header().Set("Content-Type", "application/json")
@@ -491,7 +491,7 @@ func TestGetRecentlyAccess_Success(t *testing.T) {
 	service := NewAccessServiceImpl(mockRepo, mockNotifyService, envConfig)
 
 	// Execute
-	accesses, err := service.GetRecentlyAccess()
+	accesses, err := service.GetCompleteAccess()
 
 	// Assert
 	assert.Nil(t, err)
@@ -519,7 +519,7 @@ func TestGetRecentlyAccess_Success(t *testing.T) {
 	assert.Equal(t, expectedExitAt, *accesses[1].ExitAt)
 }
 
-func TestGetRecentlyAccess_ParseIntError_ExternalID(t *testing.T) {
+func TestGetCompleteAccess_ParseIntError_ExternalID(t *testing.T) {
 	mockResponse := struct {
 		Data []*response.AccessDTO `json:"data"`
 	}{
@@ -551,7 +551,7 @@ func TestGetRecentlyAccess_ParseIntError_ExternalID(t *testing.T) {
 	service := NewAccessServiceImpl(mockRepo, mockNotifyService, envConfig)
 
 	// Execute
-	accesses, err := service.GetRecentlyAccess()
+	accesses, err := service.GetCompleteAccess()
 
 	// Assert
 	assert.Error(t, err)
@@ -559,7 +559,7 @@ func TestGetRecentlyAccess_ParseIntError_ExternalID(t *testing.T) {
 	assert.Contains(t, err.Error(), "invalid syntax")
 }
 
-func TestGetRecentlyAccess_ParseIntError_Location(t *testing.T) {
+func TestGetCompleteAccess_ParseIntError_Location(t *testing.T) {
 	mockResponse := struct {
 		Data []*response.AccessDTO `json:"data"`
 	}{
@@ -591,7 +591,7 @@ func TestGetRecentlyAccess_ParseIntError_Location(t *testing.T) {
 	service := NewAccessServiceImpl(mockRepo, mockNotifyService, envConfig)
 
 	// Execute
-	accesses, err := service.GetRecentlyAccess()
+	accesses, err := service.GetCompleteAccess()
 
 	// Assert
 	assert.Error(t, err)
@@ -599,7 +599,7 @@ func TestGetRecentlyAccess_ParseIntError_Location(t *testing.T) {
 	assert.Contains(t, err.Error(), "invalid syntax")
 }
 
-func TestGetRecentlyAccess_ParseTimeError_EntryAt(t *testing.T) {
+func TestGetCompleteAccess_ParseTimeError_EntryAt(t *testing.T) {
 	mockResponse := struct {
 		Data []*response.AccessDTO `json:"data"`
 	}{
@@ -631,14 +631,14 @@ func TestGetRecentlyAccess_ParseTimeError_EntryAt(t *testing.T) {
 	service := NewAccessServiceImpl(mockRepo, mockNotifyService, envConfig)
 
 	// Execute
-	accesses, err := service.GetRecentlyAccess()
+	accesses, err := service.GetCompleteAccess()
 
 	// Assert
 	assert.Error(t, err)
 	assert.Nil(t, accesses)
 }
 
-func TestGetRecentlyAccess_ParseTimeError_ExitAt(t *testing.T) {
+func TestGetCompleteAccess_ParseTimeError_ExitAt(t *testing.T) {
 	exitAtValue := "invalid-time"
 	mockResponse := struct {
 		Data []*response.AccessDTO `json:"data"`
@@ -671,14 +671,14 @@ func TestGetRecentlyAccess_ParseTimeError_ExitAt(t *testing.T) {
 	service := NewAccessServiceImpl(mockRepo, mockNotifyService, envConfig)
 
 	// Execute
-	accesses, err := service.GetRecentlyAccess()
+	accesses, err := service.GetCompleteAccess()
 
 	// Assert
 	assert.Error(t, err)
 	assert.Nil(t, accesses)
 }
 
-func TestGetRecentlyAccess_UnmarshalError(t *testing.T) {
+func TestGetCompleteAccess_UnmarshalError(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -695,14 +695,14 @@ func TestGetRecentlyAccess_UnmarshalError(t *testing.T) {
 	service := NewAccessServiceImpl(mockRepo, mockNotifyService, envConfig)
 
 	// Execute
-	accesses, err := service.GetRecentlyAccess()
+	accesses, err := service.GetCompleteAccess()
 
 	// Assert
 	assert.Error(t, err)
 	assert.Nil(t, accesses)
 }
 
-func TestGetRecentlyAccess_EmptyResponse(t *testing.T) {
+func TestGetCompleteAccess_EmptyResponse(t *testing.T) {
 	mockResponse := struct {
 		Data []*response.AccessDTO `json:"data"`
 	}{
@@ -725,7 +725,7 @@ func TestGetRecentlyAccess_EmptyResponse(t *testing.T) {
 	service := NewAccessServiceImpl(mockRepo, mockNotifyService, envConfig)
 
 	// Execute
-	accesses, err := service.GetRecentlyAccess()
+	accesses, err := service.GetCompleteAccess()
 
 	// Assert
 	assert.Nil(t, err)
